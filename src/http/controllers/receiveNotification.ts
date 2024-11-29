@@ -4,7 +4,7 @@ import { addNotificacao } from './onloadStatusTransaction';
 export async function receberNotificacaoHandler(
   req: Request,
   res: Response
-): Promise<void> { 
+): Promise<void> {
   try {
     const notification = req.body;
 
@@ -12,13 +12,13 @@ export async function receberNotificacaoHandler(
 
     if (!notification.transaction) {
       res.status(400).json({ error: 'Transação ausente no payload.' });
-      return; 
+      return;
     }
 
     const { id, status, createdAt } = notification.transaction;
 
-    
-    addNotificacao({ id, status, createdAt });
+    // Aguarda a adição da notificação ao Redis
+    await addNotificacao({ id, status, createdAt });
 
     res.status(200).send('Notificação processada com sucesso');
   } catch (error: any) {

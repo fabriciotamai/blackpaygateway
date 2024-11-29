@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Usando as rotas
-app.use('/api', routes); 
+app.use('/api', routes);
 
 // Porta do servidor
 const PORT = 4000;

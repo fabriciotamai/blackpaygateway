@@ -1,70 +1,38 @@
 import { Request, Response } from 'express';
+import redis from '../../../redisClient'; // Importe o cliente Redis
 
-
-const notificacoes: { id: string; status: string; createdAt: string }[] = [];
-
-
-export function addNotificacao(notification: {
+// Função para adicionar notificação ao Redis
+export async function addNotificacao(notification: {
   id: string;
   status: string;
   createdAt: string;
-}): void {
-  const index = notificacoes.findIndex((n) => n.id === notification.id)
+}): Promise<void> {
+  try {
+    const { id } = notification;
 
-  if (index !== -1) {
-    
-    if (notificacoes[index].status !== notification.status) {
-      notificacoes[index] = notification;
-      console.log(`Transação ${notification.id} atualizada para status ${notification.status}`);
-    }
-  } else {
-    
-    notificacoes.push(notification);
-    console.log(`Transação ${notification.id} adicionada com status ${notification.status}`);
+    // Armazenar a notificação no Redis com TTL de 600 segundos (10 minutos)
+    await redis.set(`notificacao:${id}`, JSON.stringify(notification), 'EX', 600);
+
+    console.log(`Transação ${id} adicionada/atualizada com status ${notification.status}`);
+  } catch (error) {
+    console.error('Erro ao adicionar notificação:', error);
   }
-
-  
-  removerNotificacoesAntigas();
 }
 
-
-function removerNotificacoesAntigas(): void {
-  const agora = new Date().getTime();
-
-  
-  const notificacoesAtuais = notificacoes.filter((n) => {
-    const createdAtTime = new Date(n.createdAt).getTime();
-    return agora - createdAtTime <= 10 * 60 * 1000; 
-  });
-
-  
-  if (notificacoesAtuais.length !== notificacoes.length) {
-    console.log(
-      `Removidas ${notificacoes.length - notificacoesAtuais.length} notificações antigas.`
-    );
-  }
-
-  
-  notificacoes.splice(0, notificacoes.length, ...notificacoesAtuais);
-}
-
-
+// Handler para consultar notificação por ID
 export async function consultarNotificacaoPorIdHandler(
   req: Request<{ id: string }>,
   res: Response
-): Promise<void> { 
-  const { id } = req.params; 
+): Promise<void> {
+  const { id } = req.params;
   try {
-    
-    const notificacao = notificacoes.find((n) => n.id === id);
-
-    
-    if (!notificacao) {
+    // Recuperar a notificação do Redis
+    const notificacaoJson = await redis.get(`notificacao:${id}`);
+    if (!notificacaoJson) {
       res.status(404).json({ error: 'Transação não encontrada' });
-      return; 
+      return;
     }
-
-    
+    const notificacao = JSON.parse(notificacaoJson);
     res.status(200).json(notificacao);
   } catch (error: any) {
     console.error('Erro ao consultar notificação:', error.message);
