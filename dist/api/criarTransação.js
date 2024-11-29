@@ -15,8 +15,10 @@ const apiClient = axios_1.default.create({
 async function criarTransacaoPix(client, publicKey, secretKey) {
     const identifier = (0, uuid_1.v4)();
     const amount = 19.9;
-    const callbackUrl = 'https://c118-2001-1284-f502-2ce4-6c19-7b2b-22d5-7d86.ngrok-free.app/api/transactions/pix/callback';
+    const callbackUrl = 'https://9e6b-2001-1284-f502-2ce4-6c19-7b2b-22d5-7d86.ngrok-free.app/api/transactions/pix/callback';
+    // Limpa o CPF para remover quaisquer caracteres não numéricos
     const cleanedCpf = client.cpf.replace(/[^\d]+/g, '');
+    // Dados do cliente formatados
     const clientData = {
         name: client.name,
         email: client.email,

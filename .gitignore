@@ -1,1 +1,32 @@
+# Dependências do Node.js
 node_modules
+
+# Build e saída do TypeScript
+dist
+out
+
+# Logs e relatórios de erros
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistemas de IDE e editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.log
+
+# Ambiente e configurações sensíveis
+.env
+.env.local
+.env.*.local
+
+# Configurações específicas do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações do TypeScript
+tsconfig.tsbuildinfo
