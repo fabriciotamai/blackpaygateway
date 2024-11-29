@@ -9,7 +9,7 @@ export function addNotificacao(notification: {
   status: string;
   createdAt: string;
 }): void {
-  const index = notificacoes.findIndex((n) => n.id === notification.id);
+  const index = notificacoes.findIndex((n) => n.id === notification.id)
 
   if (index !== -1) {
     
